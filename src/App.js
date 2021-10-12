@@ -24,7 +24,7 @@ const handleClick = (e) => {
             slp_p.innerHTML = `Tx Hash = ${SLP.tx} value = ${SLP.value}`;
             return false;
           }
-          if (tx.to === "0x6e7d616da7b598e3285f0b1ef1348ebe45cec7c3") {
+          if (tx.to === `0x${address}`) {
             if (
               tx.token_address ===
                 "0x97a9107c1793bc407d6f527b77e7fff4d812bece" &&
