@@ -1,31 +1,23 @@
-import axios from "axios";
+import apiCall from "./apiCall";
 
 const TX = { inputs: [], outputs: [] };
 
-const explorerCall = (addr) => {
-    axios(
-            `https://explorer.roninchain.com/api/tokentxs?addr=${addr}&from=0&size=100&token=ERC20`
-        )
-        .then(function(response) {
-            //Loop to filter AXS & SLP txs
-            const allTxs = response.data.results;
-            //Validate response
-            if (allTxs.length > 0) {
-                const trace = traceTXs(allTxs, addr);
-                TX.inputs.push(...trace.inputs);
-                TX.outputs.push(...trace.outputs);
-                // IF THERE IS RISK keep digging
-                /*
-                If input is not from manager track
-                2 lvls if SLP is not in cashout wallet major redflag
-                */
-                console.dir(trace);
-            }
-        })
-        .catch(function(error) {
-            // handle error
-            console.log(error);
-        });
+const explorerCall = async(addr) => {
+    const exp_resp = await apiCall(`https://explorer.roninchain.com/api/tokentxs?addr=${addr}&from=0&size=100&token=ERC20`);
+    const allTxs = exp_resp.data.results;
+    if (exp_resp.code === 1) {
+        console.dir(exp_resp.data.results);
+        //Validate response
+        if (allTxs.length > 0) {
+            const trace = traceTXs(allTxs, addr);
+            TX.inputs.push(...trace.inputs);
+            TX.outputs.push(...trace.outputs);
+            // IF THERE IS RISK keep digging           
+            console.dir(trace);
+        }
+    } else if (exp_resp.code === 0) {
+        alert(exp_resp.data);
+    }
 };
 
 const formatRonin = (address) => {
